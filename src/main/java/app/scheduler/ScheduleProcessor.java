@@ -2,6 +2,7 @@ package app.scheduler;
 
 import app.utils.ClasspathScanner;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -39,9 +40,9 @@ public class ScheduleProcessor {
                     } catch (NoSuchMethodException e) {
                         System.err.println("Skipping " + clazz.getName()
                                 + ": no public no-arg constructor");
-                    } catch (Exception e) {
-                        System.err.println("Failed to instantiate " + clazz.getName());
-                        e.printStackTrace();
+                    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e){
+                        System.err.println("Failed to instantiate " + clazz.getName()
+                                + ": " + e.getMessage());
                     }
                 }
             }
@@ -58,10 +59,10 @@ public class ScheduleProcessor {
                 executor.scheduleAtFixedRate(() -> {
                     try {
                         method.invoke(target);
-                    } catch (Exception e) {
-                        System.err.println("Scheduled method [" + method.getName()
-                                + "] threw an exception:");
-                        e.printStackTrace();
+                    } catch (IllegalAccessException | InvocationTargetException e) {
+                        System.err.println("Error invoking method "
+                                + target.getClass().getSimpleName() + "."
+                                + method.getName() + "(): " + e.getMessage());
                     }
                 }, 0, 5, TimeUnit.MINUTES);
 

@@ -4,7 +4,7 @@ import app.scheduler.ScheduleProcessor;
 
 public class Main {
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
         ScheduleProcessor processor = new ScheduleProcessor();
 
         String basePackageName = Main.class.getPackageName();

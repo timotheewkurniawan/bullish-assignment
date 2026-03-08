@@ -2,6 +2,7 @@ package app.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -32,8 +33,10 @@ public class ClasspathScanner {
                     scanJar(new File(jarPath), path, classes);
                 }
             }
-        } catch (Exception e) {
-            throw new RuntimeException("Classpath scanning failed", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read resources for package: " + basePackage, e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException("Invalid URI syntax for resource: " + e.getMessage(), e);
         }
 
         return classes;
@@ -76,7 +79,7 @@ public class ClasspathScanner {
         try {
             classes.add(Class.forName(className));
         } catch (ClassNotFoundException | NoClassDefFoundError e) {
-            // skip classes that can't be loaded
+            System.err.println("Failed to load class: " + className + " - " + e.getMessage());
         }
     }
 }
